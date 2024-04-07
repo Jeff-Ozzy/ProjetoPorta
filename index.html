@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Indie+Flower&family=Jost:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<title>Texto Aleatório na Tela</title>
+<style>
+
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        font-family: "Jost", sans-serif;
+        background-image: url("./imagens/Design sem nome (7).png");
+        background-size: cover;
+    }
+    .input-container {
+        display: flex;
+        align-items: center;
+
+    }
+
+    #inputField {
+        width: calc(100% - 80px); /* Define a largura do campo de entrada, menos a largura do botão */
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px 0 0 5px; /* Borda arredondada à esquerda */
+    }
+    #submitButton {
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 0 5px 5px 0; /* Borda arredondada à direita */
+    }
+    .button-container button {
+        margin: 0 10px;
+    }
+    .draggable-text {
+        position: absolute;
+        cursor: move; /* Cursor de movimentação ao passar sobre o texto */
+    }
+</style>
+</head>
+<body>
+      <div class="input-container">
+        <input type="text" id="inputField" placeholder="Digite algo...">
+        <button id="submitButton" onclick="sendMessage()">Enviar</button>
+
+        <style>
+
+    /* Estilo para o elemento iframe */
+    #youtubePlayer {
+        position: absolute;
+        left: -9999px; /* Posição fora da área visível da página */
+    }
+    </style>
+
+    <!-- Incorporação da playlist de vídeos do YouTube -->
+    <iframe id="youtubePlayer" width="560" height="315" src="https://www.youtube.com/embed/videoseries?si=k4-G3Ot1g8Ryp4KG&amp;list=PL8sKpdQQrT_Zgfq1oTHj-QJpftV-IM4Qd" title="YouTube video player" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
+
+    <div class="button-container">
+        <!-- Botão para iniciar a reprodução da playlist -->
+        <button id="playButton" onclick="playPlaylist()">Play</button>
+        <!-- Botão para parar a reprodução da playlist -->
+        <button onclick="stopPlaylist()">Stop</button>
+    </div>
+
+
+      <script>
+        var player; // Variável para armazenar a referência para o elemento iframe
+        var currentPlaybackTime = 0; // Variável para armazenar o tempo de reprodução atual
+
+        // Função para iniciar a reprodução da playlist
+        function playPlaylist() {
+            if (!player) { // Verifica se o player não foi inicializado
+                player = document.getElementById('youtubePlayer'); // Obtém a referência para o elemento iframe
+            }
+            // Adiciona o parâmetro de início ao src do iframe para iniciar a reprodução
+            player.src = "https://www.youtube.com/embed/videoseries?si=k4-G3Ot1g8Ryp4KG&amp;list=PL8sKpdQQrT_Zgfq1oTHj-QJpftV-IM4Qd&autoplay=1";
+            // Define o tempo de reprodução do player como a posição de reprodução atual
+            player.currentTime = currentPlaybackTime;
+        }
+
+        // Função para parar a reprodução da playlist
+        function stopPlaylist() {
+            if (player) { // Verifica se o player foi inicializado
+                // Armazena o tempo de reprodução atual
+                currentPlaybackTime = player.currentTime;
+                // Define o src do iframe como vazio para parar a reprodução
+                player.src = '';
+            }
+            // Atualiza o estado do botão "play" para que ele possa ser clicado novamente
+            document.getElementById('playButton').disabled = false;
+        }
+    </script>
+
+      </div>
+
+    <script>
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        function checkOverlap(newX, newY, newWidth, newHeight, existingTexts) {
+            for (var i = 0; i < existingTexts.length; i++) {
+                var existingText = existingTexts[i];
+                var existingX = existingText.offsetLeft;
+                var existingY = existingText.offsetTop;
+                var existingWidth = existingText.offsetWidth;
+                var existingHeight = existingText.offsetHeight;
+
+                if (newX < existingX + existingWidth &&
+                    newX + newWidth > existingX &&
+                    newY < existingY + existingHeight &&
+                    newY + newHeight > existingY) {
+                    return true; // Sobreposição detectada
+                }
+            }
+            return false; // Sem sobreposição
+        }
+
+        function sendMessage() {
+            var text = document.getElementById("inputField").value;
+            if (text.trim() === "") {
+                alert("Por favor, insira uma mensagem.");
+                return;
+            }
+            var randomX, randomY, randomSize, randomColor;
+            var newText = document.createElement("div");
+            newText.textContent = text;
+            newText.style.position = "absolute";
+            do {
+                randomX = Math.floor(Math.random() * window.innerWidth);
+                randomY = Math.floor(Math.random() * window.innerHeight);
+                randomSize = Math.floor(Math.random() * 40) + 30; // Tamanho de fonte aleatório entre 12 e 41 pixels
+                randomColor = getRandomColor(); // Cor aleatória
+            } while (checkOverlap(randomX, randomY, newText.offsetWidth, newText.offsetHeight, document.querySelectorAll('div')));
+
+            newText.style.left = randomX + "px";
+            newText.style.top = randomY + "px";
+            newText.style.fontSize = randomSize + "px";
+            newText.style.color = randomColor; // Aplica a cor aleatória ao texto
+            newText.style.textShadow = "0 0 10px #fff"; // Adiciona contorno branco
+            document.body.appendChild(newText);
+            document.getElementById("inputField").value = ""; // Limpa o campo de entrada após o envio
+
+            // Envia os dados para o backend Flask
+            fetch('/textos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    texto: text,
+                    posX: randomX,
+                    posY: randomY,
+                    fontSize: randomSize,
+                    color: randomColor
+                })
+            })
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(error => console.error('Erro:', error))
+        }
+
+    </script>
+</body>
+</html>
