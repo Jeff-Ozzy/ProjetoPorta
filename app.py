@@ -1,12 +1,19 @@
 from flask import Flask, request, jsonify
-from flask_pymongo import PyMongo
-from bson.objectid import ObjectId
+from flask_mysqldb import MySQL
 
 app = Flask(__name__)
-app.config['MONGO_URI'] = 'mongodb://localhost:27017/textos_db'
-mongo = PyMongo(app)
 
+# Configurações do banco de dados
+app.config['MYSQL_HOST'] = 'localhost3306'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = '4521'
+app.config['MYSQL_DB'] = 'projeto_porta'
+app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 
+# Inicialização do MySQL
+mysql = MySQL(app)
+
+# Rota para adicionar um novo texto ao banco de dados
 @app.route('/textos', methods=['POST'])
 def adicionar_texto():
     texto = request.json['texto']
@@ -15,24 +22,22 @@ def adicionar_texto():
     font_size = request.json['fontSize']
     color = request.json['color']
 
-    texto_id = mongo.db.textos.insert_one({
-        'texto': texto,
-        'posX': pos_x,
-        'posY': pos_y,
-        'fontSize': font_size,
-        'color': color
-    })
+    # Conexão com o banco de dados
+    cur = mysql.connection.cursor()
+    cur.execute("INSERT INTO textos (texto, posX, posY, fontSize, color) VALUES (%s, %s, %s, %s, %s)", (texto, pos_x, pos_y, font_size, color))
+    mysql.connection.commit()
+    cur.close()
 
-    novo_texto = mongo.db.textos.find_one({'_id': texto_id})
+    return jsonify({'mensagem': 'Texto adicionado com sucesso'}), 201
 
-    return jsonify({'mensagem': 'Texto adicionado com sucesso', 'texto': novo_texto}), 201
-
-
+# Rota para obter todos os textos do banco de dados
 @app.route('/textos', methods=['GET'])
 def obter_textos():
-    textos = list(mongo.db.textos.find())
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM textos")
+    textos = cur.fetchall()
+    cur.close()
     return jsonify(textos), 200
-
 
 if __name__ == '__main__':
     app.run(debug=True)
