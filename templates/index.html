@@ -16,7 +16,7 @@
         height: 100vh;
         margin: 0;
         font-family: "Jost", sans-serif;
-        background-image: url("./imagens/Design sem nome (7).png");
+        background-image: url("../static/Design sem nome (7).png");
         background-size: cover;
     }
     .input-container {
@@ -44,6 +44,15 @@
 </head>
 <body>
       <div class="input-container">
+
+          {% for texto in nomes %}
+            <div style="color:{{texto.color}}; position:absolute; left: {{texto.posX}}px; top: {{texto.posY}}px; font-size:{{texto.fontSize}}px; text-shadow: 0 0 10px #fff ">
+
+             {{texto.texto}}
+
+            </div>
+          {% endfor %}
+
         <input type="text" id="inputField" placeholder="Digite algo...">
         <button id="submitButton" onclick="sendMessage()">Enviar</button>
 

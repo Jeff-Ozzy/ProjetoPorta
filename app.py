@@ -1,10 +1,11 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_mysqldb import MySQL
 
 app = Flask(__name__)
 
 # Configurações do banco de dados
-app.config['MYSQL_HOST'] = 'localhost:3306'
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_PORT'] = 3306
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = '4521'
 app.config['MYSQL_DB'] = 'projeto_porta'
@@ -31,13 +32,14 @@ def adicionar_texto():
     return jsonify({'mensagem': 'Texto adicionado com sucesso'}), 201
 
 # Rota para obter todos os textos do banco de dados
-@app.route('/textos', methods=['GET'])
-def obter_textos():
+@app.route('/', methods=['GET'])
+
+def render_html():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM textos")
     textos = cur.fetchall()
     cur.close()
-    return jsonify(textos), 200
+    return render_template('index.html', nomes=textos)
 
 if __name__ == '__main__':
     app.run(debug=True)
